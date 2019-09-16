@@ -93,6 +93,8 @@ _Complexo é melhor que complicado_
 ## Créditos
 
 Este bot foi desenvolvido por [João Ernane](https://github.com/jovemadulto), [João Purger](https://github.com/JCPurger) e [Judite Cypreste](https://juditecypreste.github.io).
+Agradecimentos especiais à: [@fillipedornelas](https://github.com/fillipedornelas) e [@jfunez](https://github.com/jfunez).
+
 
 ## The MIT License (MIT)
 

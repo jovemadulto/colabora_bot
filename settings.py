@@ -12,3 +12,6 @@ mastodon_key = config('DONTE_USERCRED')
 
 # [Plataforms IDs]
 mastodon_profile_id = config('ID_CONTA_MASTODON')
+
+# [Banco de Dados]
+database_url = config('DATABASE_URL')
