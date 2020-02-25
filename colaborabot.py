@@ -34,8 +34,6 @@ MES = datetime.datetime.now().month
 ANO = datetime.datetime.now().year
 
 data = "{:02d}/{:02d}/{:02d}".format(DIA, MES, ANO)  # 11/04/2019
-no_certification = open("bases-sem-certificados.txt", "a")
-excecoes = open("bases-com-excecoes.txt", "a")
 
 def criar_tweet(url, orgao):
     """
@@ -150,29 +148,34 @@ def busca_disponibilidade_sites(sites):
                     status_code = resposta.status_code
                 print("{} - {} - {}".format(orgao, url, status_code))
                 last_exception = ""
+
+                if status_code != STATUS_SUCESSO:
+                    dados = cria_dados(url=url, portal=orgao, resposta=status_code)
+                    if not settings.debug:
+                        preenche_tab_gs(planilha=planilha_google, dados=dados)
+                        resultados.append(dados)
+                        checar_timelines(
+                            twitter_hander=twitter_bot,
+                            mastodon_handler=mastodon_bot,
+                            url=url,
+                            orgao=orgao,
+                        )
+
             except requests.exceptions.RequestException as e:
                 print("Tentativa {}:".format(tentativa + 1))
                 print(e)
                 if e.__class__.__name__ == "SSLError":
                     last_exception = e.__class__.__name__
-                    no_certification.write("{} - {} - {}\n".format(orgao, url, e))
+                    with open("bases-sem-certificados.txt", "a", encoding="utf-8") as no_certification:
+                        no_certification.write("{} - {} - {}\n".format(orgao, url, e))
                     continue
                 elif tentativa < TOTAL_TENTATIVAS - 1:
                     continue
                 else:
-                    excecoes.write("{} - {} - {}\n".format(orgao, url, e))
+                    with open("bases-com-excecoes.txt", "a", encoding="utf-8") as excecoes:
+                        excecoes.write("{} - {} - {}\n".format(orgao, url, e))
             break
-            if status_code != STATUS_SUCESSO:
-                dados = cria_dados(url=url, portal=orgao, resposta=status_code)
-                if not settings.debug:
-                    preenche_tab_gs(planilha=planilha_google, dados=dados)
-                    resultados.append(dados)
-                    checar_timelines(
-                        twitter_hander=twitter_bot,
-                        mastodon_handler=mastodon_bot,
-                        url=url,
-                        orgao=orgao,
-                    )
+
     preenche_csv(resultados)
 
 
